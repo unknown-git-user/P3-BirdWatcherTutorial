@@ -29,7 +29,7 @@
     {"Key":"Semicolon",       "Switch":"shipPos"},
     {"Key":"V",               "Switch":"shipEnter"},
     {"Key":"Y",               "Switch":"shipExitTop"},
-    {"Key":"B",               "Switch":"shipExitBottom"},
+    {"Key":"B",               "ModeToGuiEvent":"Evt_SpawnBird","Data":"0"},
     {"Key":"G",               "Switch":"slingL"},
     {"Key":"H",               "Switch":"slingR"},
     {"Key":"N",               "Switch":"rightRamp"},

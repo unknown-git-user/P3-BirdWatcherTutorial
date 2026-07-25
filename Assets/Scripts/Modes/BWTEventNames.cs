@@ -22,5 +22,8 @@ namespace Francotronics.BWT.Modes
         public const string BWTHomeSetup = "Evt_BWTHomeSetup";
         public const string InitialLaunch = "Evt_InitialLaunch";
         public const string BallDrained = "Evt_BallDrained";
+        public const string SpawnBird = "Evt_SpawnBird";
+        public const string SpawnBirdFromIndex = "Evt_SpawnBirdFromIndex";
+        public const string BirdHit = "Evt_BirdHit";
     }
 }
