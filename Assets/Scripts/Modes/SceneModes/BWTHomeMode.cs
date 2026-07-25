@@ -2,6 +2,7 @@ using System;
 using Multimorphic.P3;
 using Multimorphic.P3App.Modes;
 using Multimorphic.NetProcMachine.Machine;
+using Multimorphic.NetProcMachine.Config;
 using System.Collections.Generic;
 
 namespace Francotronics.BWT.Modes
@@ -11,6 +12,7 @@ namespace Francotronics.BWT.Modes
 	{
 		private bool _ballStarted;
 		private BirdRampMode _birdRampMode;
+		private TimerMode _mainTimer;
 		// private SomeRelatedMode someRelatedMode;
 
         public BWTHomeMode (P3Controller controller, int priority, string SceneName)
@@ -20,12 +22,31 @@ namespace Francotronics.BWT.Modes
             _birdRampMode = new BirdRampMode(p3,BWTPriorities.PRIORITY_BIRD_RAMPS);
 
             AddModeEventHandler(BWTEventNames.InitialLaunch, InitialLaunchEventHandler, Priority);
+
+			// Handling Holes
+            foreach (BallPathDefinition shot in p3.BallPaths.Values)
+            {
+                if (shot.ExitType == BallPathExitType.Hole)
+                {
+                    Multimorphic.P3App.Logging.Logger.Log(
+                        Multimorphic.P3App.Logging.LogCategories.Game,
+                        "Installing ShotHitHandler for : " + shot.CompletedEvent + " exitType: " + shot.ExitType.ToString());
+                    AddModeEventHandler(shot.CompletedEvent, HolePathEventHandler, priority);
+                }
+            }
+            AddModeEventHandler("Evt_TroughLauncherEntry", HolePathEventHandler, priority);
+			_mainTimer = new TimerMode(p3, priority, MainTimerExpired, "Main");
         }
 
         protected override void LaunchCallback()
         {
             Multimorphic.P3App.Logging.Logger.Log("Launch Callback. Ball Launched");
-            PostModeEventToModes (BWTEventNames.EnableBallSearch, true);
+            p3.AddMode(_mainTimer);
+#if DEBUG
+            _mainTimer.Start(10);
+#else
+            _mainTimer.Start(45);
+#endif
         }
 
         public bool sw_launch_active(Switch sw)
@@ -124,9 +145,7 @@ namespace Francotronics.BWT.Modes
 
         public bool sw_drain_active(Switch sw)
         {
-            PostModeEventToModes (BWTEventNames.BallDrained, 0);
-            End();
-
+            BWTBallLauncher.launch();
             return SWITCH_CONTINUE;
         }
 
@@ -158,5 +177,17 @@ namespace Francotronics.BWT.Modes
 			return modeSummary;
 		}
 
+        // We are just going to default to launching a new ball if the Ball ends up in any of the Holes or the Through
+        public bool HolePathEventHandler(string eventName, object eventData)
+        {
+            BWTBallLauncher.launch();
+            return EVENT_STOP;
+        }
+
+        private void MainTimerExpired()
+        {
+            PostModeEventToModes(BWTEventNames.MainTimerExpired, null);
+            End();
+        }
 	}
 }

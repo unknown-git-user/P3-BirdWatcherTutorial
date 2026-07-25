@@ -63,6 +63,24 @@ namespace Francotronics.BWT.Modes.Data
                 attr.defaultValue.Set(250000L);
                 attr.compareOptions = GameAttributeCompareOptions.UpdateValueIfDefaultChanged;
             }
+			else if (attr.item == "NumBalls")
+            {
+                attr.value.Set (1);
+                attr.defaultValue.Set (1);
+                attr.options |= GameAttributeOptions.Hidden;
+                // and since you probably already ran the game, which creates the settings file
+                // before running the above code, you'll want to force it to change back:
+                attr.compareOptions |= GameAttributeCompareOptions.UpdateValueIfDefaultChanged;
+            }
+            else if (attr.item == "MaxPlayers")
+            {
+                attr.value.Set (1);
+                attr.defaultValue.Set (1);
+                attr.options |= GameAttributeOptions.Hidden;
+                // and since you probably already ran the game, which creates the settings file
+                // before running the above code, you'll want to force it to change back:
+                attr.compareOptions |= GameAttributeCompareOptions.UpdateValueIfDefaultChanged;
+            }
 			
 			return attr;
 		}

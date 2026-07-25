@@ -25,5 +25,6 @@ namespace Francotronics.BWT.Modes
         public const string SpawnBird = "Evt_SpawnBird";
         public const string SpawnBirdFromIndex = "Evt_SpawnBirdFromIndex";
         public const string BirdHit = "Evt_BirdHit";
+        public const string MainTimerExpired = "Evt_MainTimerExpired";
     }
 }
