@@ -24,7 +24,7 @@ namespace Francotronics.BWT.Modes
 		private HUDMode hudMode;
 
 		private FlippersMode flippersMode; //!< Enables/Disables/Remaps flippers
-		//private BumpersMode bumpersMode; //!< Enables/Disables bumpers (slings, pops, etc)
+		private BumpersMode bumpersMode; //!< Enables/Disables bumpers (slings, pops, etc)
 		
 		private PopupMode popupMode;
 		private BWTHomeMode homeMode;
@@ -45,7 +45,7 @@ namespace Francotronics.BWT.Modes
 
 			// Instantiate other modes in preparation of them being added when necessary.
 			flippersMode = new FlippersMode (p3, Priorities.PRIORITY_UTILITIES);
-			//bumpersMode = new BumpersMode (p3, Priorities.PRIORITY_UTILITIES);
+			bumpersMode = new BumpersMode (p3, Priorities.PRIORITY_UTILITIES);
 
 			attractMode = new BWTAttractMode (p3, Priorities.PRIORITY_ATTRACT, "Attract");
 			buttonCombosMode = new BWTButtonCombosMode (p3, BWTPriorities.PRIORITY_BUTTON_COMBOS);
@@ -131,7 +131,7 @@ namespace Francotronics.BWT.Modes
 			base.mode_started ();
 
 			p3.AddMode(flippersMode);
-            //p3.AddMode (bumpersMode);
+            p3.AddMode(bumpersMode);
 
             // Use the following line if your game shouldn't check high scores when the game is over.
             //highScoreCheckEnabled = false;

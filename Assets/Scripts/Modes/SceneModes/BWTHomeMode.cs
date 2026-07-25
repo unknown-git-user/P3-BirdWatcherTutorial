@@ -9,14 +9,46 @@ namespace Francotronics.BWT.Modes
 
 	public class BWTHomeMode : SceneMode
 	{
-
+		private bool _ballStarted;
 		// private SomeRelatedMode someRelatedMode;
 
-		public BWTHomeMode (P3Controller controller, int priority, string SceneName)
-			: base(controller, priority, SceneName)
-		{
-			// AddModeEventHandler("Evt_SomeModeEventName", SomeHandlerFunction, priority);
-		}
+        public BWTHomeMode (P3Controller controller, int priority, string SceneName)
+                : base(controller, priority, SceneName)
+        {
+            _ballStarted = false;
+            AddModeEventHandler(BWTEventNames.InitialLaunch, InitialLaunchEventHandler, Priority);
+        }
+
+        protected override void LaunchCallback()
+        {
+            Multimorphic.P3App.Logging.Logger.Log("Launch Callback. Ball Launched");
+            PostModeEventToModes (BWTEventNames.EnableBallSearch, true);
+        }
+
+        public bool sw_launch_active(Switch sw)
+        {
+            if (!_ballStarted)
+            {
+                _ballStarted = true;
+                PostModeEventToModes(BWTEventNames.InitialLaunch, null);
+            }
+            return SWITCH_CONTINUE;
+        }
+
+        public bool sw_launch_active_for_2s(Switch sw)
+        {
+            Multimorphic.P3App.Logging.Logger.Log("Debug Launch.");
+            BWTBallLauncher.launch();
+            return SWITCH_CONTINUE;
+        }
+
+        public bool InitialLaunchEventHandler(string eventName, object eventData)
+        {
+            PostModeEventToModes(BWTEventNames.BallStarted, 0);
+            PostModeEventToModes(BWTEventNames.ChangeGameState, GameState.BallInPlay);
+            BWTBallLauncher.launch(LaunchCallback);
+            return EVENT_STOP;
+        }
 
 		public override void mode_started ()
 		{
@@ -51,19 +83,26 @@ namespace Francotronics.BWT.Modes
 
 		public override void SceneLiveEventHandler( string evtName, object evtData )
 		{
-			base.SceneLiveEventHandler(evtName, evtData);
-			// Add any special setup that the scene requires here, including sending messages to the GUI.
+            // We are avoiding calling the the base here because our Home mode does not work like standard "mode" scenes.
+            // base.SceneLiveEventHandler(evtName, evtData);
+            // Add any special setup that the scene requires here, including sending messages to the GUI.
+            StartPlaying();
 		}
 
 		protected override void StartPlaying()
-		{
-			base.StartPlaying();
+        {
+            base.StartPlaying();
+            _ballStarted = false;
 
-			PostModeEventToGUI("Evt_BWTHomeSetup", 0);
+            // Enable the flippers, slings and pop bumpers.
+            PostModeEventToModes (BWTEventNames.EnableFlippers, true);
+            PostModeEventToModes (BWTEventNames.EnableBumpers, true);
+            PostModeEventToModes (BWTEventNames.EnableBallSearch, false);
 
-			// PostInstructionEvent("Some instructions");
-			BWTBallLauncher.launch ();
-		}
+            // Standard call to the GUI player to initial the Scene
+            PostModeEventToGUI(BWTEventNames.BWTHomeSetup, 0);
+        }
+
 
 		protected override void Completed(long score)
 		{
@@ -87,15 +126,23 @@ namespace Francotronics.BWT.Modes
 			return SWITCH_CONTINUE;   // use SWITCH_STOP to prevent other modes from receiving this notification.
 		}
 
-		public override void End()
-		{
-			// someRelatedMode.End();
+        public bool sw_drain_active(Switch sw)
+        {
+            PostModeEventToModes (BWTEventNames.BallDrained, 0);
+            End();
 
-			Pause();
-			// Save any remaining stats
+            return SWITCH_CONTINUE;
+        }
 
-			base.End ();
-		}
+        public override void End()
+        {
+            Pause();
+            base.End ();
+            PostModeEventToModes (BWTEventNames.EnableFlippers, false);
+            PostModeEventToModes (BWTEventNames.EnableBumpers, false);
+            PostModeEventToModes (BWTEventNames.EnableBallSearch, false);
+            PostModeEventToModes (BWTEventNames.BallEnded, null);
+        }
 
 		public void Pause()
 		{
