@@ -12,6 +12,15 @@ namespace Francotronics.BWT.Modes
         {
             AddModeEventHandler(BWTEventNames.SpawnBird, SpawnBirdEventHandler, Priority);
             AddGUIEventHandler(BWTEventNames.BirdHit, BirdHitEventHandler);
+
+            foreach (BallPathDefinition shot in p3.BallPaths.Values)
+            {   
+                if (shot.ExitName == "LeftInlane" || shot.ExitName == "RightInlane")
+                {
+                    Multimorphic.P3App.Logging.Logger.Log("[BirdRampMode] Setup shot: " + shot.CompletedEvent);
+                    AddModeEventHandler(shot.CompletedEvent, RampHitEventHandler, priority);
+                }
+            }            
         }
 
         public override void mode_started ()
@@ -30,6 +39,12 @@ namespace Francotronics.BWT.Modes
             int bushIndex = Int32.Parse((string)eventData);
             PostModeEventToGUI(BWTEventNames.SpawnBirdFromIndex, bushIndex);
             return EVENT_STOP;
+        }
+
+        private bool RampHitEventHandler(string eventName, object eventData)
+        {
+            PostModeEventToGUI(BWTEventNames.SpawnBirdFromIndex, UnityEngine.Random.Range(0,4));
+            return EVENT_CONTINUE;
         }
     }
 }
