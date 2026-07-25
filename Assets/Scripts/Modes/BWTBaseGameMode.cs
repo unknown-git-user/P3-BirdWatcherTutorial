@@ -27,7 +27,7 @@ namespace Francotronics.BWT.Modes
 		//private BumpersMode bumpersMode; //!< Enables/Disables bumpers (slings, pops, etc)
 		
 		private PopupMode popupMode;
-		private HomeMode homeMode;
+		private BWTHomeMode homeMode;
 		private ShotsMode shotsMode;
 		private IntroVideoMode introVideoMode;
 
@@ -53,7 +53,7 @@ namespace Francotronics.BWT.Modes
 
 			hudMode = new HUDMode (p3, Priorities.PRIORITY_MECH);
 			popupMode = new PopupMode (p3, Priorities.PRIORITY_MECH);
-			homeMode = new HomeMode (p3, BWTPriorities.PRIORITY_HOME, "Home");
+			homeMode = new BWTHomeMode (p3, BWTPriorities.PRIORITY_HOME, "BWTHome");
 			introVideoMode = new IntroVideoMode (p3, BWTPriorities.PRIORITY_HOME, "IntroVideo");
 
 			// Shots should be higher priority than mechs because shots could be used by mechs.
@@ -138,7 +138,7 @@ namespace Francotronics.BWT.Modes
 
             // Use the following line if your game should not attempt to use bonusMode at end-of-ball to
             // compute and show a bonus using 'bonusInfo' that you need to provide in the BallEndedEventHandler().
-            //bonusModeEnabled = false;
+            bonusModeEnabled = false;
     }
 
     public override void mode_stopped ()
@@ -188,7 +188,7 @@ namespace Francotronics.BWT.Modes
 			{
 				// Reset scoring multiplier before applying bonus.
 				ScoreManager.SetX (1);
-				bonusInfo = homeMode.getBonusInfo();
+				// bonusInfo = homeMode.getBonusInfo();
 			}
 
 			return base.BallEndedEventHandler(eventName, eventData);
