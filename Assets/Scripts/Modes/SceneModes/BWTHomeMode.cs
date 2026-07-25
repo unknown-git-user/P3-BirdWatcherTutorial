@@ -10,12 +10,15 @@ namespace Francotronics.BWT.Modes
 	public class BWTHomeMode : SceneMode
 	{
 		private bool _ballStarted;
+		private BirdRampMode _birdRampMode;
 		// private SomeRelatedMode someRelatedMode;
 
         public BWTHomeMode (P3Controller controller, int priority, string SceneName)
-                : base(controller, priority, SceneName)
+            : base(controller, priority, SceneName)
         {
             _ballStarted = false;
+            _birdRampMode = new BirdRampMode(p3,BWTPriorities.PRIORITY_BIRD_RAMPS);
+
             AddModeEventHandler(BWTEventNames.InitialLaunch, InitialLaunchEventHandler, Priority);
         }
 
@@ -50,24 +53,17 @@ namespace Francotronics.BWT.Modes
             return EVENT_STOP;
         }
 
-		public override void mode_started ()
-		{
-			base.mode_started ();
+        public override void mode_started ()
+        {
+            base.mode_started ();
+            p3.AddMode(_birdRampMode);
+        }
 
-			// p3.AddMode(someRelatedMode);
-
-			// AddGUIEventHandler ("Evt_SomeGUIEventName", SomeHandlerFunction);
-			// AddModeEventHandler ("SomeModeEventName", SomeHandlerFunction, priority);
-		}
-
-		public override void mode_stopped ()
-		{
-			// p3.RemoveMode (someRelatedMode);
-			// RemoveGUIEventHandler ("Evt_SomeGUIEventName", SomeHandlerFunction);
-			// RemoveModeEventHandler ("Evt_SomeModeEventName", SomeHandlerFunction, priority);
-			// p3.RemoveMode(someRelatedMode);
-			base.mode_stopped();
-		}
+        public override void mode_stopped ()
+        {
+            base.mode_stopped();
+            p3.RemoveMode(_birdRampMode);
+        }
 
 		public override void LoadPlayerData()
 		{

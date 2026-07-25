@@ -38,7 +38,7 @@ namespace Francotronics.BWT.Modes
         public const int PRIORITY_TEXT_EDITOR = Priorities.PRIORITY_SELECTOR_BASE + 123;
         public const int PRIORITY_EVENT_NAME_EDITOR = BWTPriorities.PRIORITY_TEXT_EDITOR + 1;
 		public const int PRIORITY_HIGH_SCORE_NAME_SELECTOR = BWTPriorities.PRIORITY_TEXT_EDITOR + 2;
-
+        public const int PRIORITY_BIRD_RAMPS = PRIORITY_HOME + 51;
     }
 }
 
