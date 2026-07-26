@@ -10,6 +10,7 @@ namespace Francotronics.BWT.Modes
         private bool _bushReady;
         private int _nextSpawnIndex;
         private System.Random _rand;
+        public static readonly string RandomBirdLaunch = "Timer_RandomBirdLaunch";
 
         public BirdRampMode (P3Controller controller, int priority)
             : base(controller, priority)
@@ -34,9 +35,25 @@ namespace Francotronics.BWT.Modes
             _rand = new System.Random();    
         }
 
+        public void LaunchRandomBird()
+        {
+            int B1 = _rand.Next(5);
+            SpawnBirdEventHandler(RandomBirdLaunch, B1.ToString());
+            int timeToNextBird = _rand.Next(7) + 3;
+            this.delay(RandomBirdLaunch, Multimorphic.NetProc.EventType.None, (double)(timeToNextBird), new Multimorphic.P3.VoidDelegateNoArgs (LaunchRandomBird));
+        }
+
         public override void mode_started ()
         {
             base.mode_started ();
+            int timeToNextBird = _rand.Next(7) + 3;
+            this.delay(RandomBirdLaunch, Multimorphic.NetProc.EventType.None, (double)(timeToNextBird), new Multimorphic.P3.VoidDelegateNoArgs (LaunchRandomBird));
+        }
+
+        private bool MainTimerExpiredEventHandler(string eventName, object eventData)
+        {
+            cancel_delayed(RandomBirdLaunch);
+            return EVENT_CONTINUE;
         }
 
         public void BirdHitEventHandler(string eventName, object eventData)
