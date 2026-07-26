@@ -1,6 +1,6 @@
 {
   "Name": "P3SA",
-  "ModuleID": "CCR",
+  "ModuleID": "Heist",
   "recordEvents": false, 
   "eventRecordingFilenameBase": "CL_recording",
   "playbackEvents": false, 

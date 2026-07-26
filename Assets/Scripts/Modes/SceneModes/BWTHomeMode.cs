@@ -13,6 +13,7 @@ namespace Francotronics.BWT.Modes
 		private bool _ballStarted;
 		private BirdRampMode _birdRampMode;
 		private TimerMode _mainTimer;
+		private BasicScoreMode _basicScoreMode;
 		// private SomeRelatedMode someRelatedMode;
 
         public BWTHomeMode (P3Controller controller, int priority, string SceneName)
@@ -20,6 +21,7 @@ namespace Francotronics.BWT.Modes
         {
             _ballStarted = false;
             _birdRampMode = new BirdRampMode(p3,BWTPriorities.PRIORITY_BIRD_RAMPS);
+			_basicScoreMode = new BasicScoreMode(p3, BWTPriorities.PRIORITY_HOME - 1);
 
             AddModeEventHandler(BWTEventNames.InitialLaunch, InitialLaunchEventHandler, Priority);
 
@@ -80,6 +82,7 @@ namespace Francotronics.BWT.Modes
         {
             base.mode_started ();
             p3.AddMode(_birdRampMode);
+			 p3.AddMode(_basicScoreMode);
 			DefaultLamps();
         }
 
@@ -87,6 +90,7 @@ namespace Francotronics.BWT.Modes
         {
             base.mode_stopped();
             p3.RemoveMode(_birdRampMode);
+			p3.RemoveMode(_basicScoreMode);
         }
 
 		public override void LoadPlayerData()

@@ -1,6 +1,9 @@
 using UnityEngine;
 using System.Collections;
 using Multimorphic.P3App.GUI;
+using Multimorphic.P3App.Modes;
+using Multimorphic.P3App.Data;
+using Francotronics.BWT.Modes;
 
 namespace Francotronics.BWT.GUI {
 
@@ -14,6 +17,13 @@ namespace Francotronics.BWT.GUI {
 		protected override void CreateEventHandlers() {
 			base.CreateEventHandlers ();
 			// AddModeEventHandler(("Evt_SomeEventName", SomeHandlerFunction);
+		}
+
+		public override void SlingshotHitEventHandler(string evtName, object evtData)
+		{
+			LocationScore info = (LocationScore) evtData;
+			bool right = info.location == "slingR";
+			PlayEdgeSound(slingshotSound, right);
 		}
 		
 		// Update is called once per frame
