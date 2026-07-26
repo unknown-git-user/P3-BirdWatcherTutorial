@@ -11,6 +11,7 @@ namespace Francotronics.BWT.Modes
         private int _nextSpawnIndex;
         private System.Random _rand;
         public static readonly string RandomBirdLaunch = "Timer_RandomBirdLaunch";
+        private int _photoCount;
 
         public BirdRampMode (P3Controller controller, int priority)
             : base(controller, priority)
@@ -59,7 +60,13 @@ namespace Francotronics.BWT.Modes
         public void BirdHitEventHandler(string eventName, object eventData)
         {
             int score = (int)eventData;
-            ScoreManager.Score(score);          
+            ScoreManager.Score(score); 
+            _photoCount++;
+        }
+
+        public int GetPhotoCount()
+        {
+            return _photoCount;
         }
 
         public bool SpawnBirdEventHandler(string eventName, object eventData)

@@ -47,6 +47,8 @@ namespace Francotronics.BWT.Modes
 #else
             _mainTimer.Start(45);
 #endif
+
+			PostModeEventToGUI("Evt_HideButtonLegend", null);
         }
 
         public bool sw_launch_active(Switch sw)
@@ -118,6 +120,8 @@ namespace Francotronics.BWT.Modes
 
             // Standard call to the GUI player to initial the Scene
             PostModeEventToGUI(BWTEventNames.BWTHomeSetup, 0);
+			ShowButtonLegend();
+			PostModeEventToGUI(BWTEventNames.ShowBirdBook, false);
         }
 
 
@@ -187,7 +191,82 @@ namespace Francotronics.BWT.Modes
         private void MainTimerExpired()
         {
             PostModeEventToModes(BWTEventNames.MainTimerExpired, null);
+            EndOfBallAnimation();
+			AddModeEventHandler("DoubleFlip", DoubleFlipEventHandler, Priority);
+        }
+
+		private bool DoubleFlipEventHandler(string eventName, object eventData)
+        {
+            CompleteGame();
+            return EVENT_STOP;
+        }
+
+		private void EndOfBallAnimation()
+        {
+            PostModeEventToModes ("Evt_EnableFlippers", false);
+            PostModeEventToModes ("Evt_EnableBumpers", false);
+            AddGUIEventHandler(BWTEventNames.PhotoAnimationComplete, AnimationCompleteEventHandler);
+            PostModeEventToGUI(BWTEventNames.ShowBirdBook, true);
+            PostModeEventToGUI(BWTEventNames.AnimatePhotos, _birdRampMode.GetPhotoCount());
+        }
+
+        public void AnimationCompleteEventHandler(string eventName, object eventData)
+        {
+            this.delay("EndOfGame", Multimorphic.NetProc.EventType.None, (double)(5), new Multimorphic.P3.VoidDelegateNoArgs (CompleteGame));
+        }
+
+        public void CompleteGame()
+        {
+            cancel_delayed("EndOfGame");
             End();
+        }
+
+		private void ShowButtonLegend()
+        {
+            Dictionary<string, string> buttonLegend = new Dictionary<string, string>();
+            // TODO: Fix for upper flipper games.
+            buttonLegend["LeftWhiteButton"] = "";
+            buttonLegend["RightWhiteButton"] = "";
+            buttonLegend["LeftRedButton"] = "Left Flipper\n(+Start): Menu";
+            buttonLegend["RightRedButton"] = "Right Flipper\n(+Start): Menu";
+            buttonLegend["LeftYellowButton"] = "";
+            buttonLegend["RightYellowButton"] = "";
+            buttonLegend["LaunchButton"] = "Launch Ball";
+
+            if (data.ball == 1)
+            {
+                if (data.Players.Count != data.GetGameAttributeValue("MaxPlayers").ToInt())
+                {
+                    buttonLegend["StartButton"] = "Add Player";
+                    if (data.Players.Count > 1)
+                        buttonLegend["StartButton"] += "\n(Hold 2s): Remove Player";
+
+                }
+                else if (data.Players.Count > 1)
+                    buttonLegend["StartButton"] = "(Hold 2s): Remove Player";
+            }
+            else if (data.GetGameAttributeValue("SoftRestartEnabled").ToBool())
+                buttonLegend["StartButton"] = "(Hold 2s): Reset Game";
+
+            PostModeEventToGUI("Evt_ShowButtonLegend", buttonLegend);
+        }
+
+		public override bool sw_buttonLeft0_active(Switch sw)
+        {
+            if (p3.Switches["buttonRight0"].IsActive())
+            {
+                PostModeEventToModes("DoubleFlip", null);
+            }
+            return SWITCH_CONTINUE;
+        }
+
+        public override bool sw_buttonRight0_active(Switch sw)
+        {
+            if (p3.Switches["buttonLeft0"].IsActive())
+            {
+                PostModeEventToModes("DoubleFlip", null);
+            }
+            return SWITCH_CONTINUE;
         }
 	}
 }

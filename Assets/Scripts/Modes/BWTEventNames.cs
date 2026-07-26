@@ -29,6 +29,8 @@ namespace Francotronics.BWT.Modes
         public const string InlaneRightLower =  "Evt_InlaneRightLower";
         public const string InlaneLeftLower =  "Evt_InlaneLeftLower";
         public const string Shake =  "Evt_Shake";
-
+        public const string AnimatePhotos = "Evt_AnimatePhotos";
+        public const string ShowBirdBook = "Evt_ShowBirdBook";
+        public const string PhotoAnimationComplete = "Evt_PhotoAnimationComplete";
     }
 }
