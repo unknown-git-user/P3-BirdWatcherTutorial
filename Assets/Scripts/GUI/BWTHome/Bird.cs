@@ -9,10 +9,14 @@ namespace Francotronics.BWT.GUI
         public Vector3 Velocity;
         public float MovementSpeed;
         public int Score = 100;
+        public GameObject PhotoPrefab;
+        private GameObject _photoManager;
+        private bool _lockout;
 
         public override void Start ()
         {
             base.Start ();
+            _photoManager = GameObject.Find("PhotosOverlay");
         }
 
         protected override void CreateEventHandlers()
@@ -32,11 +36,16 @@ namespace Francotronics.BWT.GUI
 
         public void OnTriggerEnter(Collider other)
         {
+            if (_lockout)
+            {
+                return;
+            }
             // Only respond to ball hits
             if (other.name == "BallAvatarTrail")
             {
+                _lockout = true;
                 PostGUIEventToModes(BWTEventNames.BirdHit, Score);
-                popupScores.Spawn("Photo Taken", Score, transform.position, 1);
+                _photoManager.GetComponent<PhotoManager>().TakePhoto(PhotoPrefab, transform.position);
                 Destroy(gameObject);
             }
         }
