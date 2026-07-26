@@ -58,6 +58,7 @@ namespace Francotronics.BWT.Modes
 
 			// Shots should be higher priority than mechs because shots could be used by mechs.
 			shotsMode = new ShotsMode (p3, Priorities.PRIORITY_MECH+2);
+			base.useBackboxColorsMode = false;
 
 			InitBallSearchMode();
 

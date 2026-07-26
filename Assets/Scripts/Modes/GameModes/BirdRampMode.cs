@@ -2,6 +2,7 @@ using System;
 using Multimorphic.P3;
 using Multimorphic.P3App.Modes;
 using Multimorphic.NetProcMachine.Config;
+using System.Collections.Generic;
 
 namespace Francotronics.BWT.Modes
 {
@@ -12,6 +13,8 @@ namespace Francotronics.BWT.Modes
         private System.Random _rand;
         public static readonly string RandomBirdLaunch = "Timer_RandomBirdLaunch";
         private int _photoCount;
+        private List<HighlightRampMode> _lightshows;
+        private CameraFlashMode _cameraFlashMode;
 
         public BirdRampMode (P3Controller controller, int priority)
             : base(controller, priority)
@@ -19,21 +22,26 @@ namespace Francotronics.BWT.Modes
             AddModeEventHandler(BWTEventNames.SpawnBird, SpawnBirdEventHandler, Priority);
             AddGUIEventHandler(BWTEventNames.BirdHit, BirdHitEventHandler);
 
+            _cameraFlashMode = null;
+            _lightshows = new List<HighlightRampMode>();
+
             foreach (BallPathDefinition shot in p3.BallPaths.Values)
-            {   
+            {  
                 if (shot.ExitName == "LeftInlane" || shot.ExitName == "RightInlane")
                 {
                     Multimorphic.P3App.Logging.Logger.Log("[BirdRampMode] Setup shot: " + shot.CompletedEvent);
                     AddModeEventHandler(shot.CompletedEvent, RampHitEventHandler, priority);
+                    HighlightRampMode lightshow = new HighlightRampMode(p3, Priority, shot.EntranceLEDs);
+                    _lightshows.Add(lightshow);
                 }
-            }    
+            }   
 
             AddModeEventHandler(BWTEventNames.InlaneRightLower, InlaneEventHandler, Priority);
             AddModeEventHandler(BWTEventNames.InlaneLeftLower, InlaneEventHandler, Priority);
 
             _bushReady = false;
             _nextSpawnIndex = -1;
-            _rand = new System.Random();    
+            _rand = new System.Random();
         }
 
         public void LaunchRandomBird()
@@ -47,8 +55,28 @@ namespace Francotronics.BWT.Modes
         public override void mode_started ()
         {
             base.mode_started ();
+            _photoCount = 0;
             int timeToNextBird = _rand.Next(7) + 3;
             this.delay(RandomBirdLaunch, Multimorphic.NetProc.EventType.None, (double)(timeToNextBird), new Multimorphic.P3.VoidDelegateNoArgs (LaunchRandomBird));
+            foreach (HighlightRampMode lightshow in _lightshows)
+            {
+                p3.AddMode(lightshow);
+            }
+        }
+
+        public override void mode_stopped()
+        {
+            base.mode_stopped();
+            foreach (HighlightRampMode lightshow in _lightshows)
+            {
+                p3.RemoveMode(lightshow);
+            }
+            _lightshows.Clear();
+            if (_cameraFlashMode != null)
+            {
+                p3.RemoveMode(_cameraFlashMode);
+                _cameraFlashMode = null;
+            }
         }
 
         private bool MainTimerExpiredEventHandler(string eventName, object eventData)
@@ -59,9 +87,16 @@ namespace Francotronics.BWT.Modes
 
         public void BirdHitEventHandler(string eventName, object eventData)
         {
-            int score = (int)eventData;
-            ScoreManager.Score(score); 
+            KeyValuePair<int, float[]> hit = ( KeyValuePair<int, float[]>)eventData;
+            ScoreManager.Score(hit.Key); 
             _photoCount++;
+            if (_cameraFlashMode != null)
+            {
+                p3.RemoveMode(_cameraFlashMode);
+                _cameraFlashMode = null;
+            }
+            _cameraFlashMode = new CameraFlashMode(p3, Priority + 2, hit.Value );
+            p3.AddMode(_cameraFlashMode);
         }
 
         public int GetPhotoCount()

@@ -80,6 +80,7 @@ namespace Francotronics.BWT.Modes
         {
             base.mode_started ();
             p3.AddMode(_birdRampMode);
+			DefaultLamps();
         }
 
         public override void mode_stopped ()
@@ -267,6 +268,27 @@ namespace Francotronics.BWT.Modes
                 PostModeEventToModes("DoubleFlip", null);
             }
             return SWITCH_CONTINUE;
+        }
+
+		private void DefaultLamps()
+        {
+            for (int i=0; i<LEDScripts.Count; i++)
+            {
+                if (LEDScripts[i].led.Name.Contains ("SideModule"))
+                    LEDScripts[i] = LEDHelpers.OnLED (p3, LEDScripts[i], Multimorphic.P3.Colors.Color.green);
+                else if (BRWDLedManager.IsPlayfiedInsert(LEDScripts[i].led.Name))
+                    LEDScripts[i] = LEDHelpers.OnLED (p3, LEDScripts[i], BRWDLedManager.DarkGrey);
+                else if (LEDScripts[i].led.Name.Contains ("flasher"))
+                    LEDScripts[i] = LEDHelpers.OnLED (p3, LEDScripts[i], BRWDLedManager.DarkGrey);
+                else if (LEDScripts[i].led.Name.Contains ("wall") || LEDScripts[i].led.Name.Contains("scoop"))
+                    LEDScripts[i] = LEDHelpers.OnLED (p3, LEDScripts[i], Multimorphic.P3.Colors.Color.green);
+                else if (LEDScripts[i].led.Name == "playfield")
+                    LEDScripts[i] = LEDHelpers.OnLED(p3, LEDScripts[i], BRWDLedManager.Sunlight);
+                else if (Array.Exists<string>(LEDScripts[i].led.Tags, x => x == "BaseP3"))
+                    LEDScripts[i] = LEDHelpers.OnLED(p3, LEDScripts[i], Multimorphic.P3.Colors.Color.lightorange );
+                else 
+                    LEDScripts[i] = LEDHelpers.OnLED (p3, LEDScripts[i], BRWDLedManager.Sunlight);
+            }
         }
 	}
 }

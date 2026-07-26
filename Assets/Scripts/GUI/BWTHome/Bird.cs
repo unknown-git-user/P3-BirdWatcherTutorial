@@ -1,6 +1,7 @@
 using UnityEngine;
 using Multimorphic.P3App.GUI;
 using Francotronics.BWT.Modes;
+using System.Collections.Generic;
 
 namespace Francotronics.BWT.GUI
 {    
@@ -35,6 +36,15 @@ namespace Francotronics.BWT.GUI
                     Velocity.z * MovementSpeed * Time.deltaTime);
         }
 
+        private float[] ScreenSpaceToModuleSpace(Vector3 pos)
+        {
+            float width = 1080f;
+            float height = 1920f;
+            float widthConversion = 20f; // This is probably wrong, but good enough for this example.
+            float heightConversion = 20f; // this is wrong, and not used.
+            return new float[] {(float)(pos[0]/width)*widthConversion, (float)(pos[1]/height)*heightConversion, 0};
+        }
+
         public void OnTriggerEnter(Collider other)
         {
             if (_lockout)
@@ -45,7 +55,10 @@ namespace Francotronics.BWT.GUI
             if (other.name == "BallAvatarTrail")
             {
                 _lockout = true;
-                PostGUIEventToModes(BWTEventNames.BirdHit, Score);
+                Vector3 pos = _photoManager.GetComponent<PhotoManager>().GetScreenPosition(transform.position);
+                PostGUIEventToModes(
+                    BWTEventNames.BirdHit,
+                    new KeyValuePair<int, float[]>(Score, ScreenSpaceToModuleSpace(pos)));
                 _photoManager.GetComponent<PhotoManager>().TakePhoto(PhotoPrefab, transform.position);
                 Destroy(gameObject);
             }

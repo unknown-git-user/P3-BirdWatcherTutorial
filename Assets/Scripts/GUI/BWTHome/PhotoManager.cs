@@ -31,5 +31,10 @@ namespace Francotronics.BWT.GUI
             photo.transform.SetParent(transform, true);
             Destroy(photo, 3);
         }
+
+        public Vector3 GetScreenPosition(Vector3 pos)
+        {
+            return MainCamera.WorldToScreenPoint(pos);
+        }
     }
 }
