@@ -1,6 +1,6 @@
 {
   "Name": "P3SA",
-  "ModuleID": "CCR",
+  "ModuleID": "Heist",
   "recordEvents": false, 
   "eventRecordingFilenameBase": "CL_recording",
   "playbackEvents": false, 
@@ -24,7 +24,7 @@
     {"Key":"Space",           "Switch":"moatInA"},
     {"Key":"X",               "Switch":"leftLoopEnter"},
     {"Key":"W",               "Switch":"leftLoop"},
-    {"Key":"R",               "Switch":"secretHole"},
+    {"Key":"R",               "ModeToModeEvent":"Evt_Shot_RightRampToPassthrough","Data":""},
     {"Key":"C",               "Switch":"leftRamp"},
     {"Key":"Semicolon",       "Switch":"shipPos"},
     {"Key":"V",               "Switch":"shipEnter"},

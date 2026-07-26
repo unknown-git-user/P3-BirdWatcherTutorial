@@ -7,6 +7,10 @@ namespace Francotronics.BWT.Modes
 {
     public class BirdRampMode : BWTGameMode
     {       
+        private bool _bushReady;
+        private int _nextSpawnIndex;
+        private System.Random _rand;
+
         public BirdRampMode (P3Controller controller, int priority)
             : base(controller, priority)
         {
@@ -20,7 +24,14 @@ namespace Francotronics.BWT.Modes
                     Multimorphic.P3App.Logging.Logger.Log("[BirdRampMode] Setup shot: " + shot.CompletedEvent);
                     AddModeEventHandler(shot.CompletedEvent, RampHitEventHandler, priority);
                 }
-            }            
+            }    
+
+            AddModeEventHandler(BWTEventNames.InlaneRightLower, InlaneEventHandler, Priority);
+            AddModeEventHandler(BWTEventNames.InlaneLeftLower, InlaneEventHandler, Priority);
+
+            _bushReady = false;
+            _nextSpawnIndex = -1;
+            _rand = new System.Random();    
         }
 
         public override void mode_started ()
@@ -43,7 +54,33 @@ namespace Francotronics.BWT.Modes
 
         private bool RampHitEventHandler(string eventName, object eventData)
         {
-            PostModeEventToGUI(BWTEventNames.SpawnBirdFromIndex, UnityEngine.Random.Range(0,4));
+            Multimorphic.P3App.Logging.Logger.Log("Ramp hit. Spawning Bird.");
+
+            // We will generate 2 possible places to spawn.
+            int B1 = _rand.Next(5);
+            int B2 = _rand.Next(4);
+            // We select [0,3] and if we selected the same thing as before change it to 4. This does sampling without replacement.
+            if (B1 == B2)
+            {
+                B2 = 4;
+            }
+            // Indicate that to inlane that we are ready to lauch
+            _bushReady = true;
+            // Post visual hints to the GUI layer
+            PostModeEventToGUI(BWTEventNames.Shake, B1);
+            PostModeEventToGUI(BWTEventNames.Shake, B2);
+            _nextSpawnIndex = B1;
+            return EVENT_CONTINUE;
+        }
+
+        private bool InlaneEventHandler(string eventName, object eventData) {
+            if (_bushReady)
+            {
+                Multimorphic.P3App.Logging.Logger.Log("Inlane: " + eventName + "Crossed. Spawning Bird from index: " + _nextSpawnIndex.ToString());
+                _bushReady = false;
+                // We are using a string because of how we configured the Spawn event in AppConfig.
+                SpawnBirdEventHandler(eventName, _nextSpawnIndex.ToString());
+            }
             return EVENT_CONTINUE;
         }
     }
