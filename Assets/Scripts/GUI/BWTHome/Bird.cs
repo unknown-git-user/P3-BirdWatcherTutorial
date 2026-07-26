@@ -12,6 +12,7 @@ namespace Francotronics.BWT.GUI
         public GameObject PhotoPrefab;
         private GameObject _photoManager;
         private bool _lockout;
+        public string AudioClipGroup;
 
         public override void Start ()
         {
@@ -48,6 +49,11 @@ namespace Francotronics.BWT.GUI
                 _photoManager.GetComponent<PhotoManager>().TakePhoto(PhotoPrefab, transform.position);
                 Destroy(gameObject);
             }
+        }
+
+        public void PlayBirdCall()
+        {
+            BWTAudio.Instance.PlaySound3D(AudioClipGroup, transform, false);
         }
     }
 }

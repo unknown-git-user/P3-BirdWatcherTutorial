@@ -31,11 +31,13 @@ namespace Francotronics.BWT.GUI
         private void SpawnBirdFromIndexEventHandler(string eventName, object eventData)
         {
             int bushIndex = (int)eventData;
-            // Generate a random flight vector. We constrain it to be upwards but dont go off screen right away.
-            Vector3 velocity = Bushes[bushIndex].GetComponent<Bush>().RandomDirection();            // To make the bird face the direction of of movement, we use LookRotation.
+            // Generate a random flight vector. We constrain it to be upwards.
+            Vector3 velocity = Bushes[bushIndex].GetComponent<Bush>().RandomDirection();
+            // To make the bird face the direction of of movement, we use LookRotation.
             GameObject bird = Instantiate(BirdPrefab, Bushes[bushIndex].transform.position + new Vector3(0,0.5f,0), Quaternion.LookRotation(velocity, new Vector3(0,1,0)));
             bird.transform.SetParent(transform,true);
             bird.GetComponent<Bird>().Velocity = velocity;
+            bird.GetComponent<Bird>().PlayBirdCall();
             Destroy(bird, 5);
         }
 

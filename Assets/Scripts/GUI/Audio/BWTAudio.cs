@@ -294,13 +294,13 @@ namespace Francotronics.BWT.GUI
             }
 
             // Watchdog to make sure the right playlist is playing
-            watchdogCountdown -= Time.deltaTime;
-            if (watchdogCountdown < 0)
-            {
-                watchdogCountdown = watchdogInterval;
+            // watchdogCountdown -= Time.deltaTime;
+            // if (watchdogCountdown < 0)
+            // {
+            //     watchdogCountdown = watchdogInterval;
 
-                UpdatePlaylist();
-            }
+            //     UpdatePlaylist();
+            // }
 
             if (fadingSources.Count > 0)
             {
@@ -384,6 +384,12 @@ namespace Francotronics.BWT.GUI
                 variableClip = clipGroup.NextClip();
                 clipName = variableClip.clipName;
             }
+            else
+            {
+                variableClip = Resources.Load<VariableAudioClip>("Prefabs/Sound/" + clipName);
+                if (variableClip)
+                    clipName = variableClip.clipName;
+            }
 
             if (clips.ContainsKey(clipName))
                 clip = clips[clipName];
@@ -407,10 +413,11 @@ namespace Francotronics.BWT.GUI
                 source.pitch = Random.Range(variableClip.minPitch, variableClip.maxPitch);
                 source.volume = Random.Range(variableClip.minVolume, variableClip.maxVolume);
 
-                if (clipGroup.outputAudioMixerGroup)
+                if (clipGroup && clipGroup.outputAudioMixerGroup)
                     source.outputAudioMixerGroup = clipGroup.outputAudioMixerGroup;
                 else
                     source.outputAudioMixerGroup = defaultMixerGroup;
+                source.time = variableClip.startOffset;
             }
             else
             {

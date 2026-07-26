@@ -24,6 +24,7 @@ namespace Francotronics.BWT.GUI
 
         public void TakePhoto(GameObject prefab, Vector3 pos)
         {
+            BWTAudio.Instance.PlaySound3D("CameraSound", pos);
             Vector3 screenPos = MainCamera.WorldToScreenPoint(pos);
             GameObject photo = Instantiate(prefab, screenPos, Quaternion.identity);
             photo.transform.localScale = new Vector3(1.3f, 1.3f, 1.3f);

@@ -17,6 +17,8 @@ namespace Francotronics.BWT.GUI
         [Range(0f, 1f)]
         public float maxVolume = 1f;
         public int weight = 1;
+        [Range(0f, 10f)]
+        public float startOffset = 0f;
 
         // Use this for initialization
         void Start()
