@@ -19,6 +19,7 @@ namespace Francotronics.BWT.GUI
             base.CreateEventHandlers ();
             AddModeEventHandler(BWTEventNames.SpawnBird, SpawnBirdEventHandler);
             AddModeEventHandler(BWTEventNames.SpawnBirdFromIndex, SpawnBirdFromIndexEventHandler);
+            AddModeEventHandler(BWTEventNames.Shake, ShakeEventHandler);
         }
 
         // This is a simple helper that can be called from AppConfig keyboard shortcut.
@@ -42,6 +43,12 @@ namespace Francotronics.BWT.GUI
         public override void Update ()
         {
             base.Update ();
+        }
+
+        private void ShakeEventHandler(string eventName, object eventData)
+        {
+            int bushIndex = (int)eventData;
+            Bushes[bushIndex].GetComponent<Bush>().Shake();
         }
     }
 }

@@ -64,6 +64,11 @@ namespace Francotronics.BWT.GUI
             }
         }
 
+        public void Shake()
+        {
+            GetComponent<Animator>().SetTrigger("Shake");
+        }
+
 #if UNITY_EDITOR
         /*
         Draws the launch range arc in the Scene view.
